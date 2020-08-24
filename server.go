@@ -7,6 +7,7 @@ import (
 
 func main() {
 	d := document.FromDir("./example")
+	d.Print()
 	c := compiler.NewPiler(d)
 	c.Compile()
 }

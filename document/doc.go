@@ -24,6 +24,7 @@ func FromDir(d string) *Node {
 		return nil
 	}
 
+	n := &Node{}
 	for _, f := range fls {
 		if f.IsDir() {
 			continue
@@ -33,16 +34,12 @@ func FromDir(d string) *Node {
 			continue
 		}
 
-		n := &Node{
-			dir:  d,
-			name: f.Name(),
-		}
+		n.dir = d
+		n.name = f.Name()
 
 		n.Read()
-
-		n.Print()
 	}
-	return nil
+	return n
 }
 
 var hrf = regexp.MustCompile(`href="(?P<Link>.*)"`)
