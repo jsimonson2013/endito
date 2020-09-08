@@ -1,0 +1,15 @@
+#page-editor{
+    border: 1px solid black;
+    padding: 10px;
+    min-height: 250px;
+    min-width: 250px;
+}
+
+.edit-text{
+    cursor: text;
+}
+
+.active-edit-text{
+    border: 1px solid blue;
+    background-color: #fafafa;
+}
