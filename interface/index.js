@@ -1,4 +1,8 @@
 window.onload = () => {
+    loadListeners()
+}
+
+function loadListeners() {
     for(let i of document.querySelectorAll(".edit-text")){
         i.addEventListener("dblclick", (e) => {
             editText(e.target)
@@ -37,4 +41,37 @@ function textKeyHandler(e) {
         e.key == " ") {
         Window.active.innerHTML = Window.active.innerHTML.substring(0,Window.active.innerHTML.length - 1) + e.key + "|"
     }
+}
+
+function loadPage(){
+    const page = document.getElementById("page-location").value
+    fetch("http://localhost:3333/page/" + page)
+    .then(res => res.text())
+    .then(txt => {
+        document.getElementById("page-editor").innerHTML = txt
+        loadListeners()
+    })
+}
+
+function inferMetaTags(){
+    const innerString = document.getElementById("page-editor").innerHTML
+    const lines = innerString.split("\n")
+    for (let l of lines) {
+        console.log(l)
+    }
+    return innerString
+}
+
+function updatePage(){
+    const html = inferMetaTags()
+
+
+    fetch("http://localhost:3333/page", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'raw/text'
+        },
+        body: html
+    })
 }

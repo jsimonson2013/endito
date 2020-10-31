@@ -9,7 +9,13 @@
     cursor: text;
 }
 
+.edit-text:hover{
+    background-color: #eeeeff;
+    border: 1px solid #ccccff;
+}
+
 .active-edit-text{
     border: 1px solid blue;
+    color: blue;
     background-color: #fafafa;
 }
