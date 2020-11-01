@@ -91,6 +91,13 @@ func UpdatePage() http.HandlerFunc {
 			fmt.Fprintf(w, err.Error())
 			return
 		}
+
+		if body["uname"] != os.Getenv("USERNAME") || body["pword"] != os.Getenv("PASSWORD") {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "bad username or password")
+			return
+		}
+
 		written, err := f.WriteString(body["content"].(string))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -98,11 +105,7 @@ func UpdatePage() http.HandlerFunc {
 			return
 		}
 
-		if body["uname"] != os.Getenv("USERNAME") || body["pword"] != os.Getenv("PASSWORD") {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "bad username or password")
-			return
-		}
+		fmt.Println(body["content"].(string))
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "wrote %d bytes", written)
