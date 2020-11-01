@@ -66,7 +66,7 @@ function loadPage(){
     })
 }
 
-function inferMetaTags(){
+function buildHTMLFromPageLines(){
     const innerString = document.getElementById("page-editor").innerHTML
     const lines = innerString.split("\n")
     for (let i = 0; i < lines.length; i++){
@@ -78,8 +78,11 @@ function inferMetaTags(){
 }
 
 function updatePage(){
-    const html = inferMetaTags()
+    clearActive()
 
+    const HTML = buildHTMLFromPageLines()
+    const UNAME = document.getElementById("username").value
+    const PWORD = document.getElementById("password").value
 
     fetch("http://localhost:3333/update", {
         method: "POST",
@@ -89,7 +92,9 @@ function updatePage(){
         },
         body: JSON.stringify({
             "uri": PAGENAME,
-            "content": html
+            "uname": UNAME,
+            "pword": PWORD,
+            "content": HTML
         })
     })
 }

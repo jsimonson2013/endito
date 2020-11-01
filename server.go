@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"endito/compiler"
-	"endito/document"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -15,11 +13,6 @@ import (
 )
 
 func main() {
-	d := document.FromDir("./example")
-	d.Print()
-	c := compiler.NewPiler(d)
-	c.Compile()
-
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -102,6 +95,12 @@ func UpdatePage() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		if body["uname"] != os.Getenv("USERNAME") || body["pword"] != os.Getenv("PASSWORD") {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "bad username or password")
 			return
 		}
 		w.Header().Set("content-type", "application/json")
