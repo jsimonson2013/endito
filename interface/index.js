@@ -1,3 +1,6 @@
+let PAGELINES = []
+let PAGENAME = ""
+
 window.onload = () => {
     loadListeners()
 }
@@ -44,11 +47,21 @@ function textKeyHandler(e) {
 }
 
 function loadPage(){
-    const page = document.getElementById("page-location").value
-    fetch("http://localhost:3333/page/" + page)
+    PAGENAME = document.getElementById("page-location").value
+    fetch("http://localhost:3333/load", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "uri": PAGENAME
+        })
+    })
     .then(res => res.text())
     .then(txt => {
         document.getElementById("page-editor").innerHTML = txt
+        PAGELINES = txt.split("\n")
         loadListeners()
     })
 }
@@ -56,22 +69,27 @@ function loadPage(){
 function inferMetaTags(){
     const innerString = document.getElementById("page-editor").innerHTML
     const lines = innerString.split("\n")
-    for (let l of lines) {
-        console.log(l)
+    for (let i = 0; i < lines.length; i++){
+        if (lines[i].trim().length > 0) {
+            PAGELINES[i] = lines[i]
+        }
     }
-    return innerString
+    return PAGELINES.join("\n")
 }
 
 function updatePage(){
     const html = inferMetaTags()
 
 
-    fetch("http://localhost:3333/page", {
+    fetch("http://localhost:3333/update", {
         method: "POST",
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'raw/text'
+          'Content-Type': 'application/json'
         },
-        body: html
+        body: JSON.stringify({
+            "uri": PAGENAME,
+            "content": html
+        })
     })
 }

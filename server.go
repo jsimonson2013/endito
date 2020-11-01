@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"endito/compiler"
 	"endito/document"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
-	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -33,21 +33,31 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	r.Post("/page", UpdatePage())
+	r.Post("/update", UpdatePage())
 
-	r.Get("/page/{uri}", LoadPage())
-
-	// r.HandleFunc("/page", UpdatePage).Methods("POST")
-	// r.HandleFunc("/{id}", UpdatePage).Methods("GET")
+	r.Post("/load", LoadPage())
 
 	http.ListenAndServe(":3333", r)
 }
 
 func LoadPage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		uri := chi.URLParam(r, "uri")
+		bs, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+		defer r.Body.Close()
 
-		f, err := os.OpenFile(uri, os.O_RDONLY, os.ModePerm)
+		var body map[string]interface{}
+		if err := json.Unmarshal(bs, &body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		f, err := os.OpenFile(body["uri"].(string), os.O_RDONLY, os.ModePerm)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
@@ -67,15 +77,35 @@ func LoadPage() http.HandlerFunc {
 
 func UpdatePage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		b, err := ioutil.ReadAll(r.Body)
+		bs, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
 			return
 		}
-		fmt.Println(string(b))
-		vars := mux.Vars(r)
+		defer r.Body.Close()
+
+		var body map[string]interface{}
+		if err := json.Unmarshal(bs, &body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		f, err := os.OpenFile(body["uri"].(string), os.O_RDWR, os.ModePerm)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+		written, err := f.WriteString(body["content"].(string))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "ID: %v\n", vars["id"])
+		fmt.Fprintf(w, "wrote %d bytes", written)
 	}
 }
