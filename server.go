@@ -104,8 +104,6 @@ func UpdatePage() http.HandlerFunc {
 			fmt.Fprintf(w, err.Error())
 			return
 		}
-
-		fmt.Println(body["content"].(string))
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "wrote %d bytes", written)
