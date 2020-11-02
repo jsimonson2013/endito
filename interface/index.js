@@ -13,6 +13,7 @@ function loadListeners() {
     }
 
     document.addEventListener("click", () => {
+        document.removeEventListener("keydown", preventDefault, false)
         clearActive()
     })
 }
@@ -22,7 +23,7 @@ function clearActive() {
         if (i.innerHTML[i.innerHTML.length - 1] == "|") {
             i.innerHTML = i.innerHTML.substring(0, i.innerHTML.length - 1)
         }
-        i.removeEventListener("keyup", textKeyHandler, false)
+        document.removeEventListener("keyup", textKeyHandler, false) 
         i.classList.remove("active-edit-text")
         Window.active = null
     }
@@ -32,7 +33,12 @@ function editText(tgt) {
     tgt.classList.add("active-edit-text")
     tgt.innerHTML += "|"
     Window.active = tgt
+    document.addEventListener("keydown", preventDefault, false)
     document.addEventListener("keyup", textKeyHandler, false)      
+}
+
+function preventDefault(e) {
+    e.preventDefault()
 }
 
 function textKeyHandler(e) {
