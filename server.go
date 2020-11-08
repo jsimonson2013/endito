@@ -85,27 +85,26 @@ func UpdatePage() http.HandlerFunc {
 			return
 		}
 
-		f, err := os.OpenFile(body["uri"].(string), os.O_RDWR, os.ModePerm)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, err.Error())
-			return
-		}
-
 		if body["uname"] != os.Getenv("USERNAME") || body["pword"] != os.Getenv("PASSWORD") {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "bad username or password")
 			return
 		}
 
-		written, err := f.WriteString(body["content"].(string))
-		if err != nil {
+		if _, err = ioutil.ReadFile(body["uri"].(string)); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
 			return
 		}
+
+		if err := ioutil.WriteFile(body["uri"].(string), []byte(body["content"].(string)), os.ModePerm); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "wrote %d bytes", written)
+		fmt.Fprintf(w, "wrote %d bytes", len([]byte(body["content"].(string))))
 	}
 }

@@ -22,3 +22,7 @@ Any HTML file can be fetched and Endito renders it with a WYSIWYG-style wrapper.
 
 ## Usage
 Endito is run as a companion service on the same host as the HTML file server. It accepts a path to the HTML file root directory on startup and can fetch auth from a variety of ways. It receives a POST request from the user interface (WYSIWYG editor), performs a git commit, and updates the POST'd file.
+
+### Notes
+WSL direnv
+- eval "$(direnv hook bash)"
