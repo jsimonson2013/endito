@@ -6,6 +6,9 @@ If you enjoy the service and want to support me in further open source developme
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=8P7E4L2D2K6BU)
 
+## Usage
+Endito is run as a companion service on the same host as the HTML file server. It accepts a path to the HTML file root directory on startup and can fetch auth from a variety of ways. It receives a POST request from the user interface (WYSIWYG editor), performs a git commit, and updates the POST'd file.
+
 ## Content editing
 Any content editing system must have a few components
 - awareness of the source files that need to be updated
@@ -23,10 +26,7 @@ This is not a new problem and many solutions have been developed with several mo
 - Shared syntax between the files and the input requests
 
 ## How it works
-Any HTML file can be fetched and Endito renders it with a WYSIWYG-style wrapper. After edits are performed through Endito's editor, the editor can enter their username and password to submit the edit request. If the HTML file's host server supports Endito, and the editor's authorization is successful, the files will be uploaded and the new HTML files will be present.
-
-## Usage
-Endito is run as a companion service on the same host as the HTML file server. It accepts a path to the HTML file root directory on startup and can fetch auth from a variety of ways. It receives a POST request from the user interface (WYSIWYG editor), performs a git commit, and updates the POST'd file.
+Any HTML file can be fetched and Endito renders it with a WYSIWYG-style wrapper that leverages [contenteditable attribute](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Editable_content). After edits are performed through Endito's editor, the editor can enter their username and password to submit the edit request. If the HTML file's host server supports Endito, and the editor's authorization is successful, the files will be uploaded and the new HTML files will be present.
 
 ### Notes
 WSL direnv
