@@ -1,24 +1,25 @@
 <html>
     <head>
-        <title></title>
+        <title>Endito</title>
         <link rel="stylesheet" href="style.css"/>
         <script src="index.js"></script>
     </head>
     <body>
         <div id="load-page-form">
-            <label for="page-location">Page:</label>
-            <input type="text" id="page-location" name="page-location" size="45">
-            <button onclick="loadPage()">Load</button>
+            <label for="page-location" class="form-label">Page:</label>
+            <input type="text" id="page-location" name="page-location" size="80%" style="font-size: large;"/>
+            <button onclick="loadPage()" class="form-button">Load</button>
         </div>
         <div id="page-editor">
             <!-- PAGE WILL LOAD HERE -->
+            <p style="margin:20px;">Page will load here...</p>
         </div>
         <div id="update-page-form">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" size="10">
-            <label for="password">Password:</label>
-            <input type="text" id="password" name="password" size="10">
-            <button onclick="updatePage()">Update</button>
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" name="username" size="10" style="font-size: large;">
+            <label for="password" class="form-label">Password:</label>
+            <input type="text" id="password" name="password" size="10" style="font-size: large;">
+            <button onclick="updatePage()" class="form-button">Update</button>
         </div>
     </body>
 </html>

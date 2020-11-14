@@ -1,20 +1,38 @@
-#page-editor{
+html {
+    background-color: #f0f0f0;
+}
+
+#load-page-form, #update-page-form {
+    margin: 20px;
+}
+
+#page-editor {
     border: 1px solid black;
-    padding: 10px;
+    margin: 10px;
     min-height: 250px;
     min-width: 250px;
 }
 
-.edit-text{
+.form-label {
+    font-size: x-large;
+    font-family: Helvetica;
+}
+
+.form-button {
+    font-size: larger; 
+    font-family: Helvetica;
+}
+
+.edit-text {
     cursor: text;
 }
 
-.edit-text:hover{
+.edit-text:hover {
     background-color: #eeeeff;
     border: 1px solid #ccccff;
 }
 
-.active-edit-text{
+.active-edit-text {
     border: 1px solid blue;
     color: blue;
     background-color: #fafafa;
