@@ -1,6 +1,11 @@
 # Endito
 A service for editing web pages.
 
+## Support
+If you enjoy the service and want to support me in further open source development.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?hosted_button_id=8P7E4L2D2K6BU)
+
 ## Content editing
 Any content editing system must have a few components
 - awareness of the source files that need to be updated
