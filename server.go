@@ -6,11 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 )
+
+// BASE is path to start searching for html
+const BASE = "./"
 
 func main() {
 	r := chi.NewRouter()
@@ -29,6 +33,8 @@ func main() {
 	r.Post("/update", UpdatePage())
 
 	r.Post("/load", LoadPage())
+
+	r.Get("/pages", GetPages())
 
 	http.ListenAndServe(":3333", r)
 }
@@ -66,6 +72,44 @@ func LoadPage() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, string(content))
 	}
+}
+
+func GetPages() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		files, err := readDir(BASE, nil)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, strings.Join(files, ","))
+	}
+}
+
+func readDir(dir string, files []string) ([]string, error) {
+	rdir, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(rdir) == 1 && strings.Contains(rdir[0].Name(), ".html") {
+		return append(files, dir+rdir[0].Name()), nil
+	}
+
+	for _, f := range rdir {
+		if f.IsDir() {
+			files, err = readDir(dir+f.Name()+"/", files)
+			if err != nil {
+				return nil, err
+			}
+		} else if strings.Contains(f.Name(), ".html") {
+			files = append(files, dir+f.Name())
+		}
+	}
+
+	return files, nil
 }
 
 func UpdatePage() http.HandlerFunc {

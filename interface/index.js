@@ -1,9 +1,45 @@
 let PAGELINES = []
 let PAGENAME = ""
 let CTRLDOWN = false
+let INTERFACE = "./interface/index.html"
 
 window.onload = () => {
+    getAllPages()
     loadListeners()
+}
+
+function getAllPages() {
+    fetch("http://localhost:3333/pages", {
+        method: "GET",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.text())
+    .then(txt => {
+        const files = txt.split(",")
+        if (files.length < 1) {
+            return
+        }
+
+        const loc = document.createElement("select")
+        loc.id = "page-location"
+        loc.style="font-size: large; width: 80%"
+
+        for (let f of files) {
+            if (f == INTERFACE) {
+                continue
+            }
+            const opt = document.createElement("option")
+            opt.value = f
+            opt.innerHTML = f
+            loc.appendChild(opt)
+        }
+
+        const ploc = document.getElementById("page-location")
+        document.getElementById("load-page-form").replaceChild(loc, ploc)
+    })
 }
 
 function loadListeners() {
