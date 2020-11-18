@@ -8,7 +8,6 @@ html {
 
 #page-editor {
     border: 1px solid black;
-    margin: 10px;
     min-height: 250px;
     min-width: 250px;
 }
@@ -35,5 +34,4 @@ html {
 .active-edit-text {
     border: 1px solid blue;
     color: blue;
-    background-color: #fafafa;
 }

@@ -50,6 +50,18 @@ function loadListeners() {
     document.addEventListener("dblclick", () => clearActive())
 }
 
+function setEditable() {
+    for(let i of document.querySelectorAll(".edit-text")){
+        i.setAttribute("contenteditable", true)
+    }
+}
+
+function clearContentEditable() {
+    for(let i of document.querySelectorAll(".edit-text")){
+        i.removeAttribute("contenteditable", true)
+    }
+}
+
 function clearActive() {
     for(let i of document.querySelectorAll(".active-edit-text")) {
         i.classList.remove("active-edit-text")
@@ -77,6 +89,7 @@ function loadPage(){
     .then(txt => {
         document.getElementById("page-editor").innerHTML = txt
         PAGELINES = txt.split("\n")
+        setEditable()
         loadListeners()
     })
 }
@@ -94,6 +107,7 @@ function buildHTMLFromPageLines(){
 
 function updatePage(){
     clearActive()
+    clearContentEditable()
 
     const HTML = buildHTMLFromPageLines()
     const UNAME = document.getElementById("username").value
