@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 // BASE is path to start searching for html
@@ -36,7 +39,49 @@ func main() {
 
 	r.Get("/pages", GetPages())
 
+	testGit()
+
 	http.ListenAndServe(":3333", r)
+}
+
+func testGit() {
+	repo, err := git.PlainOpen("./")
+	if err != nil {
+		return
+	}
+
+	tree, err := repo.Worktree()
+	if err != nil {
+		return
+	}
+
+	if _, err := tree.Add("."); err != nil {
+		return
+	}
+
+	status, err := tree.Status()
+	if err != nil {
+		return
+	}
+
+	fmt.Println(status)
+
+	commit, err := tree.Commit("example go-git commit", &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "John Doe",
+			Email: "john@doe.org",
+			When:  time.Now(),
+		},
+	})
+	if err != nil {
+		return
+	}
+	obj, err := repo.CommitObject(commit)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(obj)
 }
 
 func LoadPage() http.HandlerFunc {
