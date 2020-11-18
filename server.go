@@ -39,12 +39,12 @@ func main() {
 
 	r.Get("/pages", GetPages())
 
-	testGit()
+	testGit("integrate go-git")
 
 	http.ListenAndServe(":3333", r)
 }
 
-func testGit() {
+func testGit(msg string) {
 	repo, err := git.PlainOpen("./")
 	if err != nil {
 		return
@@ -66,10 +66,10 @@ func testGit() {
 
 	fmt.Println(status)
 
-	commit, err := tree.Commit("example go-git commit", &git.CommitOptions{
+	commit, err := tree.Commit(msg, &git.CommitOptions{
 		Author: &object.Signature{
-			Name:  "John Doe",
-			Email: "john@doe.org",
+			Name:  os.Getenv("GIT_UNAME"),
+			Email: os.Getenv("GIT_EMAIL"),
 			When:  time.Now(),
 		},
 	})
