@@ -7,13 +7,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 // BASE is path to start searching for html
@@ -39,12 +37,12 @@ func main() {
 
 	r.Get("/pages", GetPages())
 
-	testGit("integrate go-git")
+	testGit("integrate go-git", []string{"./"})
 
 	http.ListenAndServe(":3333", r)
 }
 
-func testGit(msg string) {
+func testGit(msg string, files []string) {
 	repo, err := git.PlainOpen("./")
 	if err != nil {
 		return
@@ -55,8 +53,10 @@ func testGit(msg string) {
 		return
 	}
 
-	if _, err := tree.Add("."); err != nil {
-		return
+	for _, file := range files {
+		if _, err := tree.Add(file); err != nil {
+			return
+		}
 	}
 
 	status, err := tree.Status()
@@ -66,22 +66,22 @@ func testGit(msg string) {
 
 	fmt.Println(status)
 
-	commit, err := tree.Commit(msg, &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  os.Getenv("GIT_UNAME"),
-			Email: os.Getenv("GIT_EMAIL"),
-			When:  time.Now(),
-		},
-	})
-	if err != nil {
-		return
-	}
-	obj, err := repo.CommitObject(commit)
-	if err != nil {
-		return
-	}
+	// commit, err := tree.Commit(msg, &git.CommitOptions{
+	// 	Author: &object.Signature{
+	// 		Name:  os.Getenv("GIT_UNAME"),
+	// 		Email: os.Getenv("GIT_EMAIL"),
+	// 		When:  time.Now(),
+	// 	},
+	// })
+	// if err != nil {
+	// 	return
+	// }
+	// obj, err := repo.CommitObject(commit)
+	// if err != nil {
+	// 	return
+	// }
 
-	fmt.Println(obj)
+	// fmt.Println(obj)
 }
 
 func LoadPage() http.HandlerFunc {
