@@ -39,8 +39,6 @@ func main() {
 
 	r.Get("/pages", GetPages())
 
-	commit("integrate go-git", []string{"./"})
-
 	http.ListenAndServe(":3333", r)
 }
 
