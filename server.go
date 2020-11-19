@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	gohttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 // BASE is path to start searching for html
@@ -76,6 +77,16 @@ func commit(msg string, files []string) error {
 	}
 
 	if _, err := repo.CommitObject(commit); err != nil {
+		return err
+	}
+
+	opts := &git.PushOptions{
+		Auth: &gohttp.BasicAuth{
+			Username: os.Getenv("GITHUB_TOKEN"),
+			Password: os.Getenv("GITHUB_PASS"),
+		},
+	}
+	if err := repo.Push(opts); err != nil {
 		return err
 	}
 
