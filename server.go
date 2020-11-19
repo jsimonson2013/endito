@@ -56,6 +56,7 @@ func commit(msg string, files []string) error {
 	}
 
 	for _, file := range files {
+		file = strings.Trim(file, "./")
 		if _, err := tree.Add(file); err != nil {
 			return err
 		}
