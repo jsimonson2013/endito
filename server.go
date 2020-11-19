@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 // BASE is path to start searching for html
@@ -37,51 +39,48 @@ func main() {
 
 	r.Get("/pages", GetPages())
 
-	testGit("integrate go-git", []string{"./"})
+	commit("integrate go-git", []string{"./"})
 
 	http.ListenAndServe(":3333", r)
 }
 
-func testGit(msg string, files []string) {
+func commit(msg string, files []string) error {
 	repo, err := git.PlainOpen("./")
 	if err != nil {
-		return
+		return err
 	}
 
 	tree, err := repo.Worktree()
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, file := range files {
 		if _, err := tree.Add(file); err != nil {
-			return
+			return err
 		}
 	}
 
-	status, err := tree.Status()
-	if err != nil {
-		return
+	if _, err := tree.Status(); err != nil {
+		return err
 	}
 
-	fmt.Println(status)
+	commit, err := tree.Commit(msg, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  os.Getenv("GIT_UNAME"),
+			Email: os.Getenv("GIT_EMAIL"),
+			When:  time.Now(),
+		},
+	})
+	if err != nil {
+		return err
+	}
 
-	// commit, err := tree.Commit(msg, &git.CommitOptions{
-	// 	Author: &object.Signature{
-	// 		Name:  os.Getenv("GIT_UNAME"),
-	// 		Email: os.Getenv("GIT_EMAIL"),
-	// 		When:  time.Now(),
-	// 	},
-	// })
-	// if err != nil {
-	// 	return
-	// }
-	// obj, err := repo.CommitObject(commit)
-	// if err != nil {
-	// 	return
-	// }
+	if _, err := repo.CommitObject(commit); err != nil {
+		return err
+	}
 
-	// fmt.Println(obj)
+	return nil
 }
 
 func LoadPage() http.HandlerFunc {
@@ -187,6 +186,12 @@ func UpdatePage() http.HandlerFunc {
 		}
 
 		if err := ioutil.WriteFile(body["uri"].(string), []byte(body["content"].(string)), os.ModePerm); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		if err := commit(fmt.Sprintf("%s updated %s", body["uname"], body["uri"].(string)), []string{body["uri"].(string)}); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
 			return
