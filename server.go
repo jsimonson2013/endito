@@ -192,7 +192,7 @@ func UpdatePage() http.HandlerFunc {
 			return
 		}
 
-		if err := commit(fmt.Sprintf("%s updated %s", body["uname"], body["uri"].(string)), []string{body["uri"].(string)}); err != nil {
+		if err := commit(fmt.Sprintf("%s updated %s", os.Getenv("GIT_UNAME"), body["uri"].(string)), []string{body["uri"].(string)}); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
 			return
