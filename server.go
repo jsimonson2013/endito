@@ -45,7 +45,7 @@ func main() {
 }
 
 func commit(msg string, files []string) error {
-	repo, err := git.PlainOpen("./")
+	repo, err := git.PlainOpen(BASE)
 	if err != nil {
 		return err
 	}
