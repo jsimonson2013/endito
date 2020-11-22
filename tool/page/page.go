@@ -2,11 +2,13 @@ package page
 
 import (
 	"encoding/json"
+	"endito/files"
 	"endito/git"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func Load() http.HandlerFunc {
@@ -79,7 +81,14 @@ func Update() http.HandlerFunc {
 			return
 		}
 
-		if err := git.Commit("./", fmt.Sprintf("%s updated %s", os.Getenv("GIT_UNAME"), body["uri"].(string)), []string{body["uri"].(string)}); err != nil {
+		rltv, err := files.GetRelativePaths(os.Getenv("RLTV_DIR"), []string{body["uri"].(string)})
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		if err := git.Commit(os.Getenv("RLTV_DIR"), fmt.Sprintf("%s updated %s", os.Getenv("GIT_UNAME"), strings.Join(rltv, ",")), rltv); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
 			return

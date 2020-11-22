@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-git/go-git/v5"
+	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 func Commit(base, msg string, files []string) error {
-	repo, err := git.PlainOpen(base)
+	repo, err := gogit.PlainOpen(base)
 	if err != nil {
 		return err
 	}
@@ -23,6 +23,7 @@ func Commit(base, msg string, files []string) error {
 
 	for _, file := range files {
 		file = strings.Trim(file, "./")
+		file = strings.Trim(file, "../")
 		if _, err := tree.Add(file); err != nil {
 			return err
 		}
@@ -32,7 +33,7 @@ func Commit(base, msg string, files []string) error {
 		return err
 	}
 
-	commit, err := tree.Commit(msg, &git.CommitOptions{
+	commit, err := tree.Commit(msg, &gogit.CommitOptions{
 		Author: &object.Signature{
 			Name:  os.Getenv("GIT_UNAME"),
 			Email: os.Getenv("GIT_EMAIL"),
@@ -47,7 +48,7 @@ func Commit(base, msg string, files []string) error {
 		return err
 	}
 
-	opts := &git.PushOptions{
+	opts := &gogit.PushOptions{
 		Auth: &http.BasicAuth{
 			Username: os.Getenv("GITHUB_TOKEN"),
 			Password: os.Getenv("GITHUB_PASS"),

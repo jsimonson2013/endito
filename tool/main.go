@@ -3,6 +3,7 @@ package main
 import (
 	"endito/page"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -27,7 +28,7 @@ func main() {
 
 	r.Post("/load", page.Load())
 
-	r.Get("/pages", page.GetPages("./"))
+	r.Get("/pages", page.GetPages(os.Getenv("BASE_DIR")))
 
 	http.ListenAndServe(":3333", r)
 }
