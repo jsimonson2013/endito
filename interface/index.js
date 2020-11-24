@@ -125,5 +125,5 @@ function updatePage(){
             "pword": PWORD,
             "content": HTML
         })
-    })
+    }).then(setEditable())
 }
