@@ -1,7 +1,7 @@
 let PAGELINES = []
 let PAGENAME = ""
 let CTRLDOWN = false
-let INTERFACE = "./interface/index.html"
+let EDITOR = "./editor/index.html"
 
 window.onload = () => {
     getAllPages()
@@ -28,7 +28,7 @@ function getAllPages() {
         loc.style="font-size: large; width: 80%"
 
         for (let f of files) {
-            if (f == INTERFACE) {
+            if (f == EDITOR) {
                 continue
             }
             const opt = document.createElement("option")

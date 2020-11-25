@@ -50,7 +50,7 @@ func Commit(base, msg string, files []string) error {
 
 	opts := &gogit.PushOptions{
 		Auth: &http.BasicAuth{
-			Username: os.Getenv("GITHUB_TOKEN"),
+			Username: os.Getenv("GITHUB_NAME"),
 			Password: os.Getenv("GITHUB_PASS"),
 		},
 	}

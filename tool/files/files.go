@@ -13,7 +13,7 @@ func ReadDir(dir string, files []string) ([]string, error) {
 		return nil, err
 	}
 
-	if len(rdir) == 1 && strings.Contains(rdir[0].Name(), ".html") && !strings.Contains(dir+rdir[0].Name(), "interface/index.html") {
+	if len(rdir) == 1 && strings.Contains(rdir[0].Name(), ".html") {
 		return append(files, dir+rdir[0].Name()), nil
 	}
 
@@ -23,7 +23,7 @@ func ReadDir(dir string, files []string) ([]string, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else if strings.Contains(f.Name(), ".html") && !strings.Contains(dir+f.Name(), "interface/index.html") {
+		} else if strings.Contains(f.Name(), ".html") {
 			files = append(files, dir+f.Name())
 		}
 	}
