@@ -3,20 +3,27 @@ package page
 import (
 	"endito/files"
 	"fmt"
-	"net/http"
+	"os"
 	"strings"
 )
 
-func GetPages(base string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		files, err := files.ReadDir(base, nil)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, err.Error())
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, strings.Join(files, ","))
+// GetAll returns the html files descendant from a base directory
+func GetAll(base string) ([]string, error) {
+	// get a list of files
+	fs, err := files.FromDir(base, nil)
+	if err != nil {
+		return nil, err
 	}
+
+	// get base directory from environment variables
+	bd := os.Getenv("BASE_DIR")
+	if bd == "" {
+		return nil, fmt.Errorf("$BASE_DIR not set")
+	}
+
+	// build path to editor file
+	edtr := fmt.Sprintf("%s/editor/index.html", strings.TrimRight(bd, "/"))
+
+	// ignore editor file
+	return files.Filter(fs, edtr), nil
 }

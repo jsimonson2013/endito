@@ -1,9 +1,9 @@
 package main
 
 import (
-	"endito/page"
+	"endito/handlers"
+
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -24,11 +24,9 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	r.Post("/update", page.Update())
-
-	r.Post("/load", page.Load())
-
-	r.Get("/pages", page.GetPages(os.Getenv("BASE_DIR")))
+	r.Post("/update", handlers.PageUpdate())
+	r.Post("/load", handlers.PageLoad())
+	r.Get("/pages", handlers.GetPages())
 
 	http.ListenAndServe(":3333", r)
 }

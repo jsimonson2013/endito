@@ -10,7 +10,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
-func Commit(base, msg string, files []string) error {
+func CommitAndPush(base, msg string, files []string) error {
 	repo, err := gogit.PlainOpen(base)
 	if err != nil {
 		return err
