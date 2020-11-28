@@ -31,6 +31,10 @@ html {
     border: 1px solid #ccccff;
 }
 
+.edit-img {
+    cursor: nwse-resize;
+}
+
 .active-edit-text {
     border: 1px solid blue;
     color: blue;

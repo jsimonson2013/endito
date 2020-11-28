@@ -1,7 +1,16 @@
 let PAGELINES = []
 let PAGENAME = ""
 let CTRLDOWN = false
-let EDITOR = "./editor/index.html"
+
+
+// ------------------------- INIT LOGIC ------------------------------------ //
+
+/*
+    onload initial event listeners are attached
+
+    getAllPages builds the select by requesting all editable pages from the 
+    endito tool
+*/
 
 window.onload = () => {
     getAllPages()
@@ -17,61 +26,21 @@ function getAllPages() {
         }
     })
     .then(res => res.text())
-    .then(txt => {
-        const files = txt.split(",")
-        if (files.length < 1) {
-            return
-        }
-
-        const loc = document.createElement("select")
-        loc.id = "page-location"
-        loc.style="font-size: large; width: 80%"
-
-        for (let f of files) {
-            if (f == EDITOR) {
-                continue
-            }
-            const opt = document.createElement("option")
-            opt.value = f
-            opt.innerHTML = f
-            loc.appendChild(opt)
-        }
-
-        const ploc = document.getElementById("page-location")
-        document.getElementById("load-page-form").replaceChild(loc, ploc)
-    })
+    .then(txt => buildPageSelect(txt))
 }
 
-function loadListeners() {
-    for(let i of document.querySelectorAll(".edit-text")){
-        i.addEventListener("click", (e) => editText(e.target))
-    }
+// ------------------------- END INIT -------------------------------------- //
 
-    document.addEventListener("dblclick", () => clearActive())
-}
 
-function setEditable() {
-    for(let i of document.querySelectorAll(".edit-text")){
-        i.setAttribute("contenteditable", true)
-    }
-}
+// ------------------------- EVENT HANDLERS -------------------------------- //
 
-function clearContentEditable() {
-    for(let i of document.querySelectorAll(".edit-text")){
-        i.removeAttribute("contenteditable", true)
-    }
-}
+/*
+    loadPage is responsible for handling requests to load an html page from
+    the endito tool given the selected option
 
-function clearActive() {
-    for(let i of document.querySelectorAll(".active-edit-text")) {
-        i.classList.remove("active-edit-text")
-    }
-}
-
-function editText(tgt) {
-    clearActive()
-    tgt.classList.add("active-edit-text")   
-}
+    updatePage sends a request to save the page with the edits applied in the
+    editor to the endito tool
+*/
 
 function loadPage(){
     PAGENAME = document.getElementById("page-location").value
@@ -86,23 +55,7 @@ function loadPage(){
         })
     })
     .then(res => res.text())
-    .then(txt => {
-        document.getElementById("page-editor").innerHTML = txt
-        PAGELINES = txt.split("\n")
-        setEditable()
-        loadListeners()
-    })
-}
-
-function buildHTMLFromPageLines(){
-    const innerString = document.getElementById("page-editor").innerHTML
-    const lines = innerString.split("\n")
-    for (let i = 0; i < lines.length; i++){
-        if (lines[i].trim().length > 0) {
-            PAGELINES[i] = lines[i]
-        }
-    }
-    return PAGELINES.join("\n")
+    .then(txt => populateEditor(txt))
 }
 
 function updatePage(){
@@ -126,4 +79,78 @@ function updatePage(){
             "content": HTML
         })
     }).then(setEditable())
+}
+
+// ------------------------- END HANDLERS ---------------------------------- //
+
+
+function buildHTMLFromPageLines(){
+    const innerString = document.getElementById("page-editor").innerHTML
+    const lines = innerString.split("\n")
+    for (let i = 0; i < lines.length; i++){
+        if (lines[i].trim().length > 0) {
+            PAGELINES[i] = lines[i]
+        }
+    }
+    return PAGELINES.join("\n")
+}
+
+function buildPageSelect(txt) {
+    const files = txt.split(",") // files come through as stringified array
+    if (files.length < 1) {
+        return
+    }
+
+    const loc = document.createElement("select")
+    loc.id = "page-location"
+    loc.style="font-size: large; width: 80%"
+
+    for (let f of files) { // create option for each file
+        const opt = document.createElement("option")
+        opt.value = f
+        opt.innerHTML = f
+        loc.appendChild(opt)
+    }
+
+    const ploc = document.getElementById("page-location")
+    document.getElementById("load-page-form").replaceChild(loc, ploc)
+}
+
+
+function clearActive() {
+    for(let i of document.querySelectorAll(".active-edit-text")) {
+        i.classList.remove("active-edit-text")
+    }
+}
+
+function clearContentEditable() {
+    for(let i of document.querySelectorAll(".edit-text")){
+        i.removeAttribute("contenteditable", true)
+    }
+}
+
+function editText(tgt) {
+    clearActive()
+    tgt.classList.add("active-edit-text")   
+}
+
+function loadListeners() {
+    for(let i of document.querySelectorAll(".edit-text")){
+        i.addEventListener("click", (e) => editText(e.target))
+    }
+
+    document.addEventListener("dblclick", () => clearActive())
+}
+
+function populateEditor(txt) {
+    document.getElementById("page-editor").innerHTML = txt
+    PAGELINES = txt.split("\n")
+    setEditable()
+    loadListeners()
+}
+
+function setEditable() {
+    for(let i of document.querySelectorAll(".edit-text")){
+        i.setAttribute("contenteditable", true)
+    }
 }
